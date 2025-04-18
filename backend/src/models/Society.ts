@@ -80,24 +80,36 @@ export const Society = {
     }
   },
 
-  // Add other CRUD functions here later (e.g., create, update, delete)
-  async create(societyData: Omit<ISociety, 'id' | 'created_at' | 'updated_at' | 'deleted_at' | 'is_deleted' | 'is_active'>): Promise<number> {
-    const { name, zone_id } = societyData
+  // Create a new society record
+  async create (societyData: Omit<ISociety, 'id' | 'created_at' | 'updated_at'>): Promise<number> {
+    // Prepare data for insertion
+    const newSociety = {
+      ...societyData,
+      is_active: societyData.is_active ?? 1,
+      is_deleted: societyData.is_deleted ?? 0,
+      // Use epoch timestamp as NULL and zero timestamp are rejected by the schema/sql_mode
+      deleted_at: societyData.deleted_at ?? '1970-01-01 00:00:01', 
+      created_at: new Date(),
+      updated_at: new Date()
+    };
+
     try {
-      // Assume new societies are active and not deleted by default
-      // Note: deleted_at is not set on creation
-      const [result] = await pool.query<OkPacket>(
-        'INSERT INTO tbl_society (name, zone_id, is_active, is_deleted, created_at, updated_at) VALUES (?, ?, 1, 0, NOW(), NOW())',
-        [name, zone_id]
-      )
-      return result.insertId
+      // Use SET ? for easier object insertion
+      const [result] = await pool.query<OkPacket>('INSERT INTO tbl_society SET ?', [newSociety]);
+      return result.insertId;
     } catch (error) {
-      console.error('[models/Society.create]', error)
-      // Handle potential foreign key constraint error if zone_id is invalid
+      console.error('[models/Society.create]', error);
+      // Handle potential foreign key constraint errors (zone_id)
       if (error instanceof Error && 'code' in error && error.code === 'ER_NO_REFERENCED_ROW_2') {
-        throw new Error(`Error creating society: Zone with ID ${zone_id} does not exist.`)
+          throw new Error('Invalid zone_id.');
       }
-      throw new Error('Error creating society record')
+      // Re-throw the original error if it's the specific one we expect, otherwise wrap it
+      if (error instanceof Error && 'code' in error && error.code === 'ER_NO_DEFAULT_FOR_FIELD') {
+          console.error("Attempted to insert NULL into non-nullable 'deleted_at' without default. Check table schema.");
+          // Still throw, but maybe a more specific message?
+          throw new Error("Database schema error: 'deleted_at' requires a value.");
+      }
+      throw new Error('Error creating society record');
     }
   },
 

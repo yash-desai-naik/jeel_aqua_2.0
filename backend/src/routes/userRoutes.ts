@@ -24,6 +24,20 @@ const router = Router()
  *   description: User management and profile operations
  */
 
+/**
+ * @swagger
+ * components:
+ *   parameters:
+ *     UserIdParam:
+ *       in: path
+ *       name: id
+ *       required: true
+ *       schema:
+ *         type: integer
+ *         minimum: 1
+ *       description: The user ID
+ */
+
 // Apply authentication middleware to all user routes
 router.use(authenticateToken)
 
@@ -49,6 +63,34 @@ router.use(authenticateToken)
  */
 router.get('/me', getCurrentUser)
 // Get a specific user by ID (likely admin only - check in controller)
+/**
+ * @swagger
+ * /users/{id}:
+ *   get:
+ *     summary: Retrieve a specific user by ID (Admin only)
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/UserIdParam'
+ *     responses:
+ *       200:
+ *         description: User data found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Bad Request (Invalid ID)
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden (Admin Required)
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
 router.get('/:id', checkAdminRole, [param('id').isInt({ gt: 0 })], handleValidationErrors, getUserById)
 // Get all users (likely admin only - check/implement in controller)
 /**
@@ -97,15 +139,42 @@ router.post('/me/change-password', changeMyPassword)
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - $ref: '#/components/parameters/UserIdParam'
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: The user ID to delete
  *     responses:
  *       200:
  *         description: User deleted successfully.
- *       400: { description: 'Bad Request (Invalid ID)' }
- *       401: { description: 'Unauthorized' }
- *       403: { description: 'Forbidden (Admin Required)' }
- *       404: { description: 'User not found' }
- *       500: { description: 'Internal server error' }
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "User deleted successfully"
+ *       400:
+ *         description: Bad Request (Invalid ID)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Invalid user ID"
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden (Admin Required)
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
  */
 router.delete('/:id', checkAdminRole, [param('id').isInt({ gt: 0 })], handleValidationErrors, deleteUser)
 

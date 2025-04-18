@@ -135,4 +135,18 @@ router.delete('/:id', checkAdminRole, [param('id').isInt({ gt: 0 })], handleVali
 
 // Add other routes for CRUD operations later (DELETE)
 
-export default router 
+export default router
+
+/**
+ * @swagger
+ * components:
+ *   parameters:
+ *     ServiceIdParam:
+ *       in: path
+ *       name: id
+ *       required: true
+ *       schema:
+ *         type: integer
+ *         minimum: 1
+ *       description: The service ID
+ */ 

@@ -5,11 +5,29 @@ import { AuthenticatedRequest } from '../middleware/authMiddleware'
 
 export const getAllSocieties = async (req: Request, res: Response): Promise<void> => {
   try {
-    const societies = await Society.findAll()
-    res.status(200).json(societies)
+    const zoneIdQuery = req.query.zoneId; // Get the query parameter
+    let societies: ISociety[];
+
+    if (zoneIdQuery) {
+      // If zoneId exists, parse it and use findByZoneId
+      const zoneId = parseInt(zoneIdQuery as string, 10);
+      if (isNaN(zoneId) || zoneId <= 0) {
+        res.status(400).json({ message: 'Invalid zoneId query parameter' });
+        return;
+      }
+      console.log(`[societyController:getAllSocieties] Filtering by zoneId: ${zoneId}`); // Optional Log
+      societies = await Society.findByZoneId(zoneId);
+    } else {
+      // If no zoneId, get all societies
+      console.log(`[societyController:getAllSocieties] Fetching all societies.`); // Optional Log
+      societies = await Society.findAll();
+    }
+
+    res.status(200).json(societies);
+
   } catch (error) {
-    console.error('Error fetching all societies:', error)
-    res.status(500).json({ message: 'Failed to fetch societies', error: error instanceof Error ? error.message : 'Unknown error' })
+    console.error('Error fetching societies:', error);
+    res.status(500).json({ message: 'Failed to fetch societies', error: error instanceof Error ? error.message : 'Unknown error' });
   }
 }
 

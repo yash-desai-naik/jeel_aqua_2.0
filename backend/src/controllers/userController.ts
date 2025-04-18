@@ -73,16 +73,28 @@ export const getAllUsers = async (req: AuthenticatedRequest, res: Response): Pro
 
 // Get current user profile
 export const getCurrentUser = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  // console.log('[userController:getCurrentUser] Received req.user:', req.user);
+
   if (!req.user) {
     res.status(401).json({ message: 'User not authenticated or token invalid' });
     return;
   }
   try {
+    const userIdToFind = req.user.userId;
+    // console.log('[userController:getCurrentUser] Attempting to find user with ID:', userIdToFind);
+
+    if (userIdToFind === undefined) {
+      console.error('[userController:getCurrentUser] Error: userId not found in req.user object.');
+      res.status(500).json({ message: 'Internal server error: User ID missing in token data.' });
+      return;
+    }
+
     // Assuming findById excludes password
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(userIdToFind);
     if (user) {
       res.json(user);
     } else {
+      console.log(`[userController:getCurrentUser] User profile not found for ID: ${userIdToFind}`);
       res.status(404).json({ message: 'User profile not found' });
     }
   } catch (error) {

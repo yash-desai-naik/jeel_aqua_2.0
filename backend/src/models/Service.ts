@@ -1,6 +1,41 @@
 import { RowDataPacket, OkPacket } from 'mysql2/promise'
 import pool from '../config/db'
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Service:
+ *       type: object
+ *       properties:
+ *         id: { type: integer, readOnly: true }
+ *         title: { type: string }
+ *         qty: { type: number, format: float, description: "Quantity value" }
+ *         measure_id: { type: integer, description: "FK to tbl_measures" }
+ *         price: { type: number, format: float }
+ *         notes: { type: string, nullable: true }
+ *         is_active: { type: integer, description: "1=active, 0=inactive" }
+ *         is_deleted: { type: integer, readOnly: true }
+ *         service_img: { type: string, nullable: true, description: "URL or path to service image" }
+ *         created_at: { type: string, format: date-time, readOnly: true }
+ *         updated_at: { type: string, format: date-time, readOnly: true }
+ *     ServiceInput:
+ *       type: object
+ *       required:
+ *         - title
+ *         - qty
+ *         - measure_id
+ *         - price
+ *       properties:
+ *         title: { type: string }
+ *         qty: { type: number, format: float, description: "Quantity value" }
+ *         measure_id: { type: integer, description: "ID from tbl_measures" }
+ *         price: { type: number, format: float }
+ *         notes: { type: string }
+ *         is_active: { type: integer, description: "1=active, 0=inactive", default: 1 }
+ *         service_img: { type: string, description: "URL or path to service image" }
+ */
+
 // Interface matching the tbl_services structure
 export interface IService {
   id?: number

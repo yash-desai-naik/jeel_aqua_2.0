@@ -8,8 +8,9 @@ const JWT_SECRET = process.env.JWT_SECRET
 
 // Define the shape of our JWT payload
 export interface UserJWTPayload extends JwtPayload {
-  id: number;
+  userId: number;
   roleId: number;
+  phone?: string;
   // Add other fields included in the token if any
 }
 
@@ -43,6 +44,7 @@ export const authenticateToken = (req: AuthenticatedRequest, res: Response, next
 
     // Type assertion to our custom payload type
     req.user = decodedPayload as UserJWTPayload
+
     next() // Proceed to the next middleware or route handler
   })
 } 
