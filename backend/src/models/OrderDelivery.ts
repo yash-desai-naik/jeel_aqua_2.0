@@ -3,6 +3,51 @@ import pool from '../config/db'
 import { OrderStatus } from './OrderStatus'
 import { OrderStatusHistory } from './OrderStatusHistory'
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     OrderDelivery:
+ *       type: object
+ *       properties:
+ *         id: { type: integer, readOnly: true }
+ *         order_id: { type: integer }
+ *         delivery_boy_id: { type: integer }
+ *         delivery_date: { type: string, format: date-time }
+ *         qty_ordered: { type: integer, description: "Quantity delivered in this instance" }
+ *         qty_return: { type: integer, description: "Quantity returned (e.g., empty jars)", default: 0 }
+ *         total_amount: { type: number, format: double, description: "Amount associated with this delivery (if applicable)" }
+ *         notes: { type: string, nullable: true }
+ *         created_at: { type: string, format: date-time, readOnly: true }
+ *         updated_at: { type: string, format: date-time, readOnly: true }
+ *         # Consider adding status derived from history if needed for display
+ *     OrderDeliveryInput:
+ *       type: object
+ *       required:
+ *         - order_id
+ *         - delivery_boy_id
+ *         - delivery_date
+ *         - qty_ordered
+ *         - total_amount
+ *         # status_id is handled automatically on create
+ *       properties:
+ *         order_id: { type: integer, description: "ID of the parent order" }
+ *         delivery_boy_id: { type: integer, description: "ID of the assigned delivery user" }
+ *         delivery_date: { type: string, format: date, description: "Date of delivery (YYYY-MM-DD)" }
+ *         qty_ordered: { type: integer, description: "Quantity to be delivered" }
+ *         total_amount: { type: number, format: double, description: "Amount for this delivery" }
+ *         notes: { type: string }
+ *     OrderDeliveryUpdateInput:
+ *       type: object
+ *       properties:
+ *         delivery_boy_id: { type: integer, description: "Reassign delivery boy" }
+ *         delivery_date: { type: string, format: date, description: "Reschedule delivery date" }
+ *         qty_return: { type: integer, description: "Quantity returned (e.g., empty jars)" }
+ *         total_amount: { type: number, format: double, description: "Update amount for delivery" }
+ *         notes: { type: string }
+ *         # status_id update might require a separate endpoint or logic
+ */
+
 // Interface matching the tbl_order_delivery structure
 export interface IOrderDelivery {
   id?: number
@@ -29,7 +74,9 @@ export const OrderDelivery = {
         'SELECT * FROM tbl_order_delivery WHERE id = ?',
         [id]
       )
-      return rows.length > 0 ? rows[0] : null
+      const result = rows.length > 0 ? rows[0] : null;
+      console.log(`[OrderDelivery.findById] DB Result for ID ${id}:`, result);
+      return result;
     } catch (error) {
       console.error('[models/OrderDelivery.findById]', error)
       throw new Error('Error fetching order delivery by ID')
@@ -133,9 +180,10 @@ export const OrderDelivery = {
     }
   },
 
-  async update(id: number, deliveryData: Partial<Pick<IOrderDelivery, 'qty_return' | 'total_amount' | 'notes'>>): Promise<boolean> {
+  async update(id: number, deliveryData: Partial<Pick<IOrderDelivery, 'delivery_boy_id' | 'delivery_date' | 'qty_return' | 'total_amount' | 'notes'> >): Promise<boolean> {
     // Define allowed fields for update
     const allowedFields: Array<keyof typeof deliveryData> = [
+        'delivery_boy_id', 'delivery_date',
         'qty_return', 'total_amount', 'notes'
     ];
 
@@ -148,15 +196,26 @@ export const OrderDelivery = {
     }
 
     // Validate input values
-    if (deliveryData.qty_return !== undefined && deliveryData.qty_return < 0) {
+    if (deliveryData.delivery_boy_id !== undefined && (typeof deliveryData.delivery_boy_id !== 'number' || deliveryData.delivery_boy_id <= 0)) {
+        throw new Error('Invalid delivery_boy_id.');
+    }
+    if (deliveryData.delivery_date !== undefined && isNaN(Date.parse(deliveryData.delivery_date as any))) {
+        throw new Error('Invalid delivery_date format.');
+    }
+    if (deliveryData.qty_return !== undefined && (typeof deliveryData.qty_return !== 'number' || deliveryData.qty_return < 0)) {
         throw new Error('Returned quantity cannot be negative.');
     }
-    if (deliveryData.total_amount !== undefined && deliveryData.total_amount < 0) {
+    if (deliveryData.total_amount !== undefined && (typeof deliveryData.total_amount !== 'number' || deliveryData.total_amount < 0)) {
         throw new Error('Total amount cannot be negative.');
     }
 
     const setClauses = fieldsToUpdate.map(field => `${field} = ?`).join(', ');
-    const values = fieldsToUpdate.map(field => deliveryData[field]);
+    const values = fieldsToUpdate.map(field => {
+        if (field === 'delivery_date' && deliveryData.delivery_date) {
+            return new Date(deliveryData.delivery_date as any);
+        }
+        return deliveryData[field];
+    });
     values.push(id); // Add the id for the WHERE clause
 
     try {

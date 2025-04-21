@@ -110,22 +110,22 @@ id: 3 - "delivery boy"
 #### Order Management
 1. Expand the **Orders** section
 2. Test the following endpoints:
-   - `GET /api/orders` - List all orders
-   - `POST /api/orders` - Create a new order
-   - `GET /api/orders/{id}` - Get a specific order
-   - `PUT /api/orders/{id}` - Update an order
-   - `DELETE /api/orders/{id}` - Delete an order
-   - `GET /api/orders/user/{userId}` - Get orders for a specific user
+   - `GET /api/orders` - List all orders ----------------------------- FIXED(added logic for startDate, EndDate, userId,swagger doc) DONE
+   - `POST /api/orders` - Create a new order ------------------------- FIXED(userId issue, swagger doc) DONE
+   - `GET /api/orders/{id}` - Get a specific order ------------------------ DONE
+   - `PUT /api/orders/{id}` - Update an order ------------------------ DONE
+   - `DELETE /api/orders/{id}` - Delete an order ------------------------- FIXED(is_deleted column added in tbl_order table) DONE
+   - `GET /api/orders/user/{userId}` - Get orders for a specific user ---------- DONE
 
 #### Delivery Management
 1. Expand the **Deliveries** section
 2. Test the following endpoints:
-   - `GET /api/deliveries` - List all deliveries
-   - `POST /api/deliveries` - Create a new delivery
-   - `GET /api/deliveries/{id}` - Get a specific delivery
-   - `PUT /api/deliveries/{id}` - Update a delivery
-   - `DELETE /api/deliveries/{id}` - Delete a delivery
-   - `GET /api/deliveries/order/{orderId}` - Get deliveries for a specific order
+   - `GET /api/deliveries` - List all deliveries  ------------------------- DONE
+   - `POST /api/deliveries` - Create a new delivery -------------------------- FIXED (authentication)DONE
+   - `GET /api/deliveries/{id}` - Get a specific delivery ------------------- DONE
+   - `PUT /api/deliveries/{id}` - Update a delivery  ------------------- DONE
+   - `DELETE /api/deliveries/{id}` - Delete a delivery ------------------- DONE
+   - `GET /api/deliveries/order/{orderId}` - Get deliveries for a specific order ------------ FIXED (swagger doc) DONE
 
 #### Payment Management
 1. Expand the **Payments** section

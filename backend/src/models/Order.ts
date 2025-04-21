@@ -23,9 +23,11 @@ import { Service } from './Service' // Import Service model to get current price
  *     OrderInput:
  *       type: object
  *       required:
+ *         - user_id
  *         - service_id
  *         - quantity
  *       properties:
+ *         user_id: { type: integer, description: "The ID of the customer placing the order" }
  *         service_id: { type: integer }
  *         quantity: { type: integer }
  *         discount: { type: number, format: double }
@@ -71,12 +73,45 @@ export const Order = {
     }
   },
 
-  // Find all orders - potentially add filters (userId, date range) later
-  async findAll (): Promise<IOrder[]> {
+  // Find all orders - potentially add filters (userId, date range)
+  async findAll (options: { userId?: number, startDate?: string, endDate?: string } = {}): Promise<IOrder[]> {
+    const { userId, startDate, endDate } = options;
+    let query = 'SELECT * FROM tbl_orders'; // Base query
+    const conditions: string[] = [];
+    const queryParams: (string | number)[] = [];
+
+    // --- Dynamic WHERE clauses --- 
+    // Always filter non-deleted orders if schema supports it
+    // if (schemaHasIsDeleted) {
+    //    conditions.push('is_deleted = 0');
+    // }
+
+    if (userId !== undefined) {
+        conditions.push('user_id = ?');
+        queryParams.push(userId);
+    }
+    if (startDate) {
+        // Add condition for start date (inclusive)
+        conditions.push('DATE(created_at) >= ?'); 
+        queryParams.push(startDate);
+    }
+    if (endDate) {
+        // Add condition for end date (inclusive)
+        conditions.push('DATE(created_at) <= ?');
+        queryParams.push(endDate);
+    }
+
+    // Append WHERE clause if conditions exist
+    if (conditions.length > 0) {
+        query += ' WHERE ' + conditions.join(' AND ');
+    }
+
+    query += ' ORDER BY created_at DESC'; // Keep ordering
+
+    console.log('[Order.findAll] Executing Query:', query, queryParams); // Optional: Log the generated query
+
     try {
-      const [rows] = await pool.query<OrderQueryResult[]>(
-        'SELECT * FROM tbl_orders ORDER BY created_at DESC'
-      )
+      const [rows] = await pool.query<OrderQueryResult[]>(query, queryParams);
       return rows
     } catch (error) {
       console.error('[models/Order.findAll]', error)

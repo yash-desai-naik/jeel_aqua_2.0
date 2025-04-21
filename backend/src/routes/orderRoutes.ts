@@ -24,6 +24,34 @@ const router = Router()
 // Protect all order routes
 router.use(authenticateToken)
 
+/**
+ * @swagger
+ * /orders:
+ *   get:
+ *     summary: Get all orders
+ *     tags: [Orders]
+ *     security: [{"bearerAuth": []}]
+ *     parameters:
+ *       - in: query
+ *         name: userId
+ *         schema: { type: integer }
+ *         required: false
+ *         description: Filter orders by user ID (customer).
+ *       - in: query
+ *         name: startDate
+ *         schema: { type: string, format: date }
+ *         required: false
+ *         description: Filter orders on or after this date (YYYY-MM-DD).
+ *       - in: query
+ *         name: endDate
+ *         schema: { type: string, format: date }
+ *         required: false
+ *         description: Filter orders on or before this date (YYYY-MM-DD).
+ *     responses:
+ *       200: { description: 'List of orders', content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Order' } } } } }
+ *       401: { description: 'Unauthorized' }
+ *       500: { description: 'Internal Server Error' }
+ */
 // GET /api/orders
 router.get('/', getAllOrders)
 
@@ -43,7 +71,9 @@ router.get('/', getAllOrders)
  */
 router.post(
   '/',
+  // Example: checkRoles([ADMIN_ROLE_ID, EMPLOYEE_ROLE_ID]), 
   [
+    body('user_id').isInt({ gt: 0 }).withMessage('Valid customer user_id is required.'),
     body('service_id').isInt({ gt: 0 }).withMessage('Valid service_id is required.'),
     body('quantity').isInt({ gt: 0 }).withMessage('Quantity must be a positive integer.'),
     body('discount').optional().isFloat({ min: 0 }).withMessage('Discount must be a non-negative number.'),

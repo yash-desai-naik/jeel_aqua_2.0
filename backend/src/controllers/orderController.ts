@@ -6,8 +6,45 @@ import { IOrder } from '../models/Order' // Import interface if needed for typin
 // Get all orders (potentially add filters/pagination later)
 export const getAllOrders = async (req: Request, res: Response): Promise<void> => {
   try {
-    // TODO: Add filtering (e.g., by date range, status) and pagination
-    const orders = await Order.findAll()
+    const { userId, startDate, endDate } = req.query;
+
+    const options: { userId?: number, startDate?: string, endDate?: string } = {};
+
+    // Validate and add userId if present
+    if (userId) {
+        const parsedUserId = parseInt(userId as string, 10);
+        if (isNaN(parsedUserId) || parsedUserId <= 0) {
+            res.status(400).json({ message: 'Invalid userId query parameter.' });
+            return;
+        }
+        options.userId = parsedUserId;
+    }
+
+    // Validate and add startDate if present
+    if (startDate) {
+        if (!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(startDate as string)) {
+             res.status(400).json({ message: 'Invalid startDate format. Use YYYY-MM-DD.' });
+            return;
+        }
+        options.startDate = startDate as string;
+    }
+
+    // Validate and add endDate if present
+    if (endDate) {
+         if (!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(endDate as string)) {
+             res.status(400).json({ message: 'Invalid endDate format. Use YYYY-MM-DD.' });
+            return;
+        }
+        options.endDate = endDate as string;
+    }
+
+    // Add further validation: Ensure startDate is not after endDate if both are provided
+    if (options.startDate && options.endDate && options.startDate > options.endDate) {
+         res.status(400).json({ message: 'startDate cannot be after endDate.' });
+         return;
+    }
+
+    const orders = await Order.findAll(options) // <<< Pass options to model
     res.status(200).json(orders)
   } catch (error) {
     console.error('Error fetching all orders:', error)
@@ -59,12 +96,21 @@ export const getOrdersByUserId = async (req: Request, res: Response): Promise<vo
 
 // Create a new order
 export const createOrder = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-  // Basic input validation
-  const { user_id, service_id, quantity, discount, notes } = req.body
+  // Get user ID from authenticated token
+  const userIdFromToken = req.user?.userId;
+  if (!userIdFromToken) {
+    // This should ideally not happen if authenticateToken middleware is effective
+    res.status(401).json({ message: 'Unauthorized: User ID not found in token' });
+    return;
+  }
 
+  // Get the customer user_id from the request body
+  const { user_id, service_id, quantity, discount, notes } = req.body;
+
+  // Validate required fields
   if (user_id === undefined || service_id === undefined || quantity === undefined) {
-    res.status(400).json({ message: 'Missing required fields: user_id, service_id, quantity' })
-    return
+      res.status(400).json({ message: 'Missing required fields: user_id, service_id, quantity' });
+      return;
   }
 
   // Validate quantity
@@ -78,18 +124,14 @@ export const createOrder = async (req: AuthenticatedRequest, res: Response): Pro
        return;
    }
 
-  // Optional: Add role check? Can customers create their own orders? Or only staff?
-  // const requestingUser = req.user;
-  // if (requestingUser.roleId === CUSTOMER_ROLE_ID && requestingUser.userId !== Number(user_id)) {
-  //     return res.status(403).json({ message: 'Forbidden: Cannot create orders for other users.' });
-  // }
+  // Role checks (if any) would go here...
 
   try {
     const newOrderData: Pick<IOrder, 'user_id' | 'service_id' | 'quantity' | 'discount' | 'notes'> = {
       user_id: Number(user_id),
       service_id: Number(service_id),
       quantity: Number(quantity),
-      discount: discount !== undefined ? Number(discount) : 0, // Default discount to 0 if not provided
+      discount: discount !== undefined ? Number(discount) : 0,
       notes: notes || null
     }
 
