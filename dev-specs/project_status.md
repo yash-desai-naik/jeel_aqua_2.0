@@ -2,7 +2,7 @@
 
 **Project:** Jeel Aqua Water Supply App
 **Version:** 1.0 (as per PRD)
-**Date:** 2025-04-17
+**Date:** 2025-04-21
 **Based on:** PRD (`prd.md`), DB Schema (`jeelaqua_water_db.sql`), Conversation History, Testing (`testing.md`)
 
 ---
@@ -11,7 +11,7 @@
 
 Development in Progress.
 
-*   **Backend:** Core CRUD APIs for fundamental entities (Auth, Users, Roles, Zones, Societies, Services, Measures) are implemented and **manually tested via API**. Several fixes related to JWT handling, database constraints, and Swagger documentation were applied. Implementation for Orders, Deliveries, Payments, Expenses, Reporting, and Order Status exists but requires further testing and refinement. Key complex business logic (detailed invoicing, Water ATM, advanced reporting) and comprehensive testing (unit/integration) remain.
+*   **Backend:** Core CRUD APIs for fundamental entities (Auth, Users, Roles, Zones, Societies, Services, Measures, Orders, Deliveries, Order Status) are implemented and **manually tested via API**. Several fixes related to JWT handling, database constraints, API logic (filtering, user ID handling), and Swagger documentation were applied. Implementation for Payments, Expenses, and Reporting exists but requires testing and refinement. Key complex business logic (detailed invoicing, Water ATM, advanced reporting) and comprehensive testing (unit/integration) remain.
 *   **Frontend:** Basic structure, Auth flow, and CRUD interfaces for Zones, Societies, Services are functional. Remaining entity management pages, dashboard widgets, and workflow screens are pending.
 
 ---
@@ -55,22 +55,26 @@ Development in Progress.
     *   Swagger documentation fixed for `POST` schema and parameter refs **(Fixed)**.
 *   **Measures (`tbl_measures`):** Full CRUD implemented & **Tested**. Validation **Tested**.
 *   **Orders (`tbl_orders`):**
-    *   Model (`Order.ts`) with `create`, `findById`, `findAllByUserId`, `update` (recalculates totals), `softDelete` (updated assuming `is_deleted` column added).
-    *   Controller (`orderController.ts`) with handlers for CRUD.
-    *   Routes (`/api/orders`) with CRUD endpoints.
-    *   Validation added (Create, Update, ID params).
+    *   Full CRUD **(Tested)**.
+    *   Validation functional **(Tested)**.
+    *   `POST /api/orders` takes `user_id` from body (requires RBAC) **(Logic Fixed & Tested)**.
+    *   `GET /api/orders` includes date/user filtering **(Logic Added & Tested)**.
+    *   `DELETE /api/orders/{id}` requires `is_deleted` column in DB **(DB Altered & Tested)**.
+    *   Swagger documentation fixed for `GET /` **(Fixed)**.
+    *   Model calculation of totals functional **(Tested implicitly)**.
 *   **Order Deliveries (`tbl_order_delivery`):**
-    *   Model (`OrderDelivery.ts`) with CRUD, including transaction for create.
-    *   Controller (`orderDeliveryController.ts`) with handlers.
-    *   Routes (`/api/deliveries`) with CRUD endpoints.
-    *   Validation added previously.
+    *   Full CRUD **(Tested)** (Note: No dedicated DELETE route/logic implemented).
+    *   Validation functional **(Tested)**.
+    *   `POST /api/deliveries` correctly uses logged-in user ID for history & links status **(Logic Fixed & Tested)**.
+    *   `PATCH /api/deliveries/{id}` updated to allow `delivery_boy_id` and `delivery_date` changes **(Logic Added & Tested)**.
+    *   Swagger documentation fixed for Schemas and parameters **(Fixed)**.
 *   **Order Status (`tbl_order_status`):**
-    *   Model (`OrderStatus.ts`) with `findAll`, `findById`, `findByTitle`.
-    *   Controller (`orderStatusController.ts`) with `getAllOrderStatuses`.
-    *   Routes (`/api/order-statuses`) with `GET /`.
+    *   `GET /api/order-statuses` functional **(Tested)**.
+    *   Swagger documentation added **(Fixed)**.
 *   **Order Status History (`tbl_order_status_history`):**
-    *   Model (`OrderStatusHistory.ts`) with `create`, `findByDeliveryId`.
-    *   Integrated into `OrderDelivery.create` to log initial status.
+    *   Model functions exist.
+    *   Integrated into `OrderDelivery.create` **(Tested implicitly via delivery creation)**.
+    *   No dedicated API routes for direct management (likely correct).
 *   **Payment History (`tbl_payment_history`):**
     *   Model (`PaymentHistory.ts`) with `create`, read methods.
     *   Controller (`paymentHistoryController.ts`) with handlers.
@@ -94,7 +98,7 @@ Development in Progress.
 ### Security & Middleware (Backend)
 *   Authentication middleware (`authenticateToken`) **(Tested)**.
 *   Basic RBAC middleware (`checkAdminRole` in `roleMiddleware.ts`) **(Tested)**.
-*   Admin checks applied to Role and User management routes **(Tested)**.
+*   Admin checks applied to Role, User, Zone, Society, Service, Measure management routes **(Tested)**.
 *   Validation error handling middleware (`handleValidationErrors`) **(Tested implicitly)**.
 
 ### Frontend (No Recent Changes)
@@ -109,36 +113,43 @@ Development in Progress.
 ## Pending Tasks / To Be Done ⏳
 
 ### Database Schema Actions (Manual)
-*   **Add `is_deleted` to `tbl_orders`:** Execute `ALTER TABLE tbl_orders ADD is_deleted TINYINT(4) NOT NULL DEFAULT 0 AFTER notes; ALTER TABLE tbl_orders ADD INDEX idx_is_deleted (is_deleted);`
 *   **Standardize `tbl_society` deletion:** Execute `ALTER TABLE tbl_society DROP COLUMN deleted_at; ALTER TABLE tbl_society ADD is_deleted TINYINT(4) NOT NULL DEFAULT 0 AFTER is_active; ALTER TABLE tbl_society ADD INDEX idx_is_deleted (is_deleted);` (May require migrating existing data).
 *   **Confirm/Create `tbl_expenses`:** Ensure the table exists with the structure assumed in `models/Expense.ts`.
 *   **Review `paymentdetails`:** Decide if this table can be dropped.
+*   **Schema for `tbl_order_delivery` soft delete?** Decide if needed and implement.
 
 ### Backend
-*   **Manual API Testing:** Test remaining modules: Orders, Deliveries, Payments, Expenses, Reports modules.
+*   **Manual API Testing:** Test remaining modules: Payments, Expenses, Reports.
+*   **Refine RBAC:**
+    *   Implement role check for `POST /api/orders` (Allow Admin/Employee only). **(Critical)**
+    *   Review/Implement role checks for `GET/PATCH/DELETE /api/orders`.
+    *   Review/Implement role checks for `GET/POST/PATCH /api/deliveries`.
+    *   Implement role checks for Payments, Expenses, Reports endpoints.
+*   **Refine `Order.update` Logic:** Clarify if totals should recalculate based on current service price or stored order price.
+*   **Implement User Due Amount Update:** Add logic within `Order.create` transaction to update `tbl_users.due_amount`.
 *   **Clarify Water ATM Logic:** Understand workflow (recharge, usage, linking) before implementation.
-*   **Implement Detailed Invoicing Logic:** Develop service/logic to generate structured invoice data beyond basic retrieval (potentially formatting, PDF generation - may be out of scope for basic backend).
+*   **Implement Detailed Invoicing Logic:** Develop service/logic to generate structured invoice data.
 *   **Implement Advanced Reporting:** Add more complex reports (e.g., sales/deliveries by zone, customer account statements).
-*   **Refine RBAC:** Implement more granular role checks (e.g., Employees access specific routes, Delivery Boys limited access).
-*   **Refine Order Status Integration:** Trigger status history updates on Delivery `update` actions.
-*   **Refine Error Handling:** Provide more specific error messages where applicable (beyond basic validation).
+*   **Refine Order Status Integration:** Trigger status history updates on Delivery `update` actions (e.g., when status changes).
+*   **Refine Error Handling:** Provide more specific error messages where applicable.
 *   **Testing:** Implement automated unit and integration tests.
 
 ### Frontend
 *   **User Management Page:** Implement UI (`/users/page.tsx`) for user CRUD.
 *   **Other Module Pages:** Implement UI for Measures, Orders, Deliveries, Payments, Expenses.
 *   **Dashboard Page:** Integrate summary data from `/api/reports/summary`.
-*   **Reporting UI:** Create pages/components to display Sales and Expense reports (using date range filters).
+*   **Reporting UI:** Create pages/components to display Sales and Expense reports.
 *   **Invoicing UI:** Display invoice data fetched from `/api/reports/invoice/:userId`.
-*   **UI/UX & Features:** Implement role-based UI elements, searching/filtering, improve simplicity based on feedback.
+*   **UI/UX & Features:** Implement role-based UI elements, searching/filtering, improve simplicity.
 *   **Technical Debt:** Loading/error states, testing.
 
 ---
 
 ## Next Steps (Recommendation) ➡️
 
-1.  **Perform Manual DB Changes:** Apply the recommended `ALTER TABLE` commands, especially standardizing `tbl_society` deletion.
-2.  **Continue Backend API Testing:** Test Orders, Deliveries, Payments, Expenses, Reports modules.
-3.  **Frontend: User Management Page (`/users/page.tsx`)**: Implement the UI to list users, using the existing `/api/users` endpoint.
-4.  **Frontend: User Management CRUD**: Add UI components (Forms, Dialogs) for adding, editing, and deleting users via the backend APIs.
-5.  **Decide Next Major Module:** Address Water ATM clarification, Invoicing logic, or proceed with Frontend implementation for another module (Measures, Orders, Expenses, Dashboard, Reporting). 
+1.  **Implement Critical RBAC:** Add role check for `POST /api/orders` **immediately**.
+2.  **Perform Manual DB Changes:** Apply recommended `ALTER TABLE` for `tbl_society`.
+3.  **Continue Backend API Testing:** Test Payments, Expenses, Reports modules.
+4.  **Implement User Due Amount Update:** Add logic to `Order.create`.
+5.  **Frontend Development:** Start with User Management (`/users/page.tsx` and CRUD components).
+6.  **Decide Next Major Backend Task:** Address Water ATM, Invoicing logic, remaining RBAC, or Advanced Reporting. 
