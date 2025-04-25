@@ -73,3 +73,6 @@ ensureAdminUserExists().then(() => {
   console.error("Critical error during startup tasks:", error)
   process.exit(1) // Optional: Exit if startup task fails critically
 })
+
+
+export default app;
