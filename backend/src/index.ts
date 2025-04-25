@@ -36,6 +36,24 @@ app.get('/api/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'ok', message: 'Backend is running' })
 })
 
+
+app.get('/api/test', (req, res) => {
+  res.status(200).json({ 
+    message: 'Serverless function is working!',
+    environment: process.env.NODE_ENV 
+  });
+});
+
+app.get('/*', (req, res) => {
+  res.status(200).json({ 
+    message: 'Catch-all route hit',
+    path: req.path,
+    method: req.method,
+    query: req.query
+  });
+});
+
+
 // Placeholder for future routes
 // import userRoutes from './routes/users' // Example
 app.use('/api/auth', authRoutes) // Mount auth routes
