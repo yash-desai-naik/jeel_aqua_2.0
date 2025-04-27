@@ -44,14 +44,14 @@ app.get('/api/test', (req, res) => {
   });
 });
 
-app.get('/*', (req, res) => {
-  res.status(200).json({ 
-    message: 'Catch-all route hit',
-    path: req.path,
-    method: req.method,
-    query: req.query
-  });
-});
+// app.get('/*', (req, res) => {
+//   res.status(200).json({ 
+//     message: 'Catch-all route hit',
+//     path: req.path,
+//     method: req.method,
+//     query: req.query
+//   });
+// });
 
 
 // Placeholder for future routes

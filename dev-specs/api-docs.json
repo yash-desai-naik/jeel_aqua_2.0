@@ -1,0 +1,3230 @@
+{
+    "swaggerDoc": {
+        "openapi": "3.0.0",
+        "info": {
+            "title": "Jeel Aqua API",
+            "version": "1.0.0",
+            "description": "API documentation for the Jeel Aqua Water Supply Dashboard backend",
+            "contact": {
+                "name": "Support Team"
+            }
+        },
+        "servers": [
+            {
+                "url": "http://localhost:3001/api",
+                "description": "Development server"
+            }
+        ],
+        "components": {
+            "securitySchemes": {
+                "bearerAuth": {
+                    "type": "http",
+                    "scheme": "bearer",
+                    "bearerFormat": "JWT"
+                }
+            },
+            "schemas": {
+                "AuthLoginInput": {
+                    "type": "object",
+                    "required": [
+                        "phone",
+                        "password"
+                    ],
+                    "properties": {
+                        "phone": {
+                            "type": "string",
+                            "description": "User's registered phone number.",
+                            "example": "0000000000"
+                        },
+                        "password": {
+                            "type": "string",
+                            "format": "password",
+                            "description": "User's password.",
+                            "example": "admin123"
+                        }
+                    }
+                },
+                "AuthLoginResponse": {
+                    "type": "object",
+                    "properties": {
+                        "message": {
+                            "type": "string",
+                            "example": "Login successful"
+                        },
+                        "token": {
+                            "type": "string",
+                            "description": "JWT token for subsequent requests."
+                        },
+                        "user": {
+                            "$ref": "#/components/schemas/User"
+                        }
+                    }
+                },
+                "Expense": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "expense_type": {
+                            "type": "string",
+                            "description": "Category of expense"
+                        },
+                        "expense_date": {
+                            "type": "string",
+                            "format": "date"
+                        },
+                        "amount": {
+                            "type": "number",
+                            "format": "double"
+                        },
+                        "source": {
+                            "type": "string",
+                            "enum": [
+                                "Cash",
+                                "Bank"
+                            ]
+                        },
+                        "remarks": {
+                            "type": "string",
+                            "nullable": true
+                        },
+                        "note": {
+                            "type": "string",
+                            "nullable": true
+                        },
+                        "approved_by": {
+                            "type": "integer",
+                            "nullable": true,
+                            "description": "User ID of approver"
+                        },
+                        "created_by": {
+                            "type": "integer",
+                            "readOnly": true,
+                            "description": "User ID of creator"
+                        },
+                        "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        },
+                        "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        },
+                        "is_deleted": {
+                            "type": "integer",
+                            "readOnly": true
+                        }
+                    }
+                },
+                "ExpenseInput": {
+                    "type": "object",
+                    "required": [
+                        "expense_type",
+                        "expense_date",
+                        "amount",
+                        "source"
+                    ],
+                    "properties": {
+                        "expense_type": {
+                            "type": "string"
+                        },
+                        "expense_date": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "YYYY-MM-DD"
+                        },
+                        "amount": {
+                            "type": "number",
+                            "format": "double"
+                        },
+                        "source": {
+                            "type": "string",
+                            "enum": [
+                                "Cash",
+                                "Bank"
+                            ]
+                        },
+                        "remarks": {
+                            "type": "string"
+                        },
+                        "note": {
+                            "type": "string"
+                        },
+                        "approved_by": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "Measure": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "title": {
+                            "type": "string"
+                        },
+                        "notes": {
+                            "type": "string",
+                            "nullable": true
+                        },
+                        "is_active": {
+                            "type": "integer",
+                            "description": "1=active, 0=inactive"
+                        },
+                        "is_deleted": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        },
+                        "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        }
+                    }
+                },
+                "MeasureInput": {
+                    "type": "object",
+                    "required": [
+                        "title"
+                    ],
+                    "properties": {
+                        "title": {
+                            "type": "string"
+                        },
+                        "notes": {
+                            "type": "string"
+                        },
+                        "is_active": {
+                            "type": "integer",
+                            "description": "1=active, 0=inactive",
+                            "default": 1
+                        }
+                    }
+                },
+                "Mock": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "description": "The mock ID.",
+                            "example": 1
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "The name of the mock item.",
+                            "example": "Test Mock Item"
+                        }
+                    },
+                    "required": [
+                        "id",
+                        "name"
+                    ]
+                },
+                "Order": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "service_id": {
+                            "type": "integer"
+                        },
+                        "user_id": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "quantity": {
+                            "type": "integer"
+                        },
+                        "price": {
+                            "type": "number",
+                            "format": "double",
+                            "readOnly": true,
+                            "description": "Price per unit at time of order"
+                        },
+                        "sub_total": {
+                            "type": "number",
+                            "format": "double",
+                            "readOnly": true
+                        },
+                        "discount": {
+                            "type": "number",
+                            "format": "double",
+                            "default": 0
+                        },
+                        "grand_total": {
+                            "type": "number",
+                            "format": "double",
+                            "readOnly": true
+                        },
+                        "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        },
+                        "notes": {
+                            "type": "string",
+                            "nullable": true
+                        }
+                    }
+                },
+                "OrderInput": {
+                    "type": "object",
+                    "required": [
+                        "user_id",
+                        "service_id",
+                        "quantity"
+                    ],
+                    "properties": {
+                        "user_id": {
+                            "type": "integer",
+                            "description": "The ID of the customer placing the order"
+                        },
+                        "service_id": {
+                            "type": "integer"
+                        },
+                        "quantity": {
+                            "type": "integer"
+                        },
+                        "discount": {
+                            "type": "number",
+                            "format": "double"
+                        },
+                        "notes": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "OrderUpdateInput": {
+                    "type": "object",
+                    "properties": {
+                        "quantity": {
+                            "type": "integer"
+                        },
+                        "discount": {
+                            "type": "number",
+                            "format": "double"
+                        },
+                        "notes": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "OrderDelivery": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "order_id": {
+                            "type": "integer"
+                        },
+                        "delivery_boy_id": {
+                            "type": "integer"
+                        },
+                        "delivery_date": {
+                            "type": "string",
+                            "format": "date-time"
+                        },
+                        "qty_ordered": {
+                            "type": "integer",
+                            "description": "Quantity delivered in this instance"
+                        },
+                        "qty_return": {
+                            "type": "integer",
+                            "description": "Quantity returned (e.g., empty jars)",
+                            "default": 0
+                        },
+                        "total_amount": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "Amount associated with this delivery (if applicable)"
+                        },
+                        "notes": {
+                            "type": "string",
+                            "nullable": true
+                        },
+                        "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        },
+                        "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        }
+                    }
+                },
+                "OrderDeliveryInput": {
+                    "type": "object",
+                    "required": [
+                        "order_id",
+                        "delivery_boy_id",
+                        "delivery_date",
+                        "qty_ordered",
+                        "total_amount"
+                    ],
+                    "properties": {
+                        "order_id": {
+                            "type": "integer",
+                            "description": "ID of the parent order"
+                        },
+                        "delivery_boy_id": {
+                            "type": "integer",
+                            "description": "ID of the assigned delivery user"
+                        },
+                        "delivery_date": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "Date of delivery (YYYY-MM-DD)"
+                        },
+                        "qty_ordered": {
+                            "type": "integer",
+                            "description": "Quantity to be delivered"
+                        },
+                        "total_amount": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "Amount for this delivery"
+                        },
+                        "notes": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "OrderDeliveryUpdateInput": {
+                    "type": "object",
+                    "properties": {
+                        "delivery_boy_id": {
+                            "type": "integer",
+                            "description": "Reassign delivery boy"
+                        },
+                        "delivery_date": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "Reschedule delivery date"
+                        },
+                        "qty_return": {
+                            "type": "integer",
+                            "description": "Quantity returned (e.g., empty jars)"
+                        },
+                        "total_amount": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "Update amount for delivery"
+                        },
+                        "notes": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "PaymentHistory": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "buyer_id": {
+                            "type": "integer"
+                        },
+                        "payment_mode": {
+                            "type": "string",
+                            "enum": [
+                                "cash",
+                                "cheque",
+                                "paytm",
+                                "gpay",
+                                "phonepe",
+                                "netbanking"
+                            ]
+                        },
+                        "payment_received_by": {
+                            "type": "integer",
+                            "description": "User ID of employee/admin who received payment"
+                        },
+                        "payment_received": {
+                            "type": "number",
+                            "format": "double"
+                        },
+                        "payment_due": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "Due amount *at the time of this payment* (may need clarification)"
+                        },
+                        "notes": {
+                            "type": "string",
+                            "nullable": true
+                        },
+                        "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        }
+                    }
+                },
+                "PaymentHistoryInput": {
+                    "type": "object",
+                    "required": [
+                        "buyer_id",
+                        "payment_mode",
+                        "payment_received"
+                    ],
+                    "properties": {
+                        "buyer_id": {
+                            "type": "integer"
+                        },
+                        "payment_mode": {
+                            "type": "string",
+                            "enum": [
+                                "cash",
+                                "cheque",
+                                "paytm",
+                                "gpay",
+                                "phonepe",
+                                "netbanking"
+                            ]
+                        },
+                        "payment_received": {
+                            "type": "number",
+                            "format": "double"
+                        },
+                        "notes": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "Role": {
+                    "type": "object",
+                    "required": [
+                        "rolename"
+                    ],
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "description": "The auto-generated ID of the role."
+                        },
+                        "rolename": {
+                            "type": "string",
+                            "description": "The name of the role.",
+                            "example": "Admin"
+                        },
+                        "is_active": {
+                            "type": "integer",
+                            "description": "Whether the role is active (1) or inactive (0).",
+                            "example": 1
+                        },
+                        "is_deleted": {
+                            "type": "integer",
+                            "description": "Whether the role is marked as deleted (1) or not (0).",
+                            "readOnly": true
+                        },
+                        "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "The date the role was created.",
+                            "readOnly": true
+                        },
+                        "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "The date the role was last updated.",
+                            "readOnly": true
+                        }
+                    },
+                    "example": {
+                        "id": 1,
+                        "rolename": "Admin",
+                        "is_active": 1,
+                        "created_at": "2024-01-01T12:00:00.000Z",
+                        "updated_at": "2024-01-01T12:00:00.000Z"
+                    }
+                },
+                "RoleInput": {
+                    "type": "object",
+                    "required": [
+                        "rolename"
+                    ],
+                    "properties": {
+                        "rolename": {
+                            "type": "string",
+                            "description": "The name of the role.",
+                            "example": "Employee"
+                        },
+                        "is_active": {
+                            "type": "integer",
+                            "description": "Set role status (1 for active, 0 for inactive).",
+                            "example": 1
+                        }
+                    }
+                },
+                "Service": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "title": {
+                            "type": "string"
+                        },
+                        "qty": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "Quantity value"
+                        },
+                        "measure_id": {
+                            "type": "integer",
+                            "description": "FK to tbl_measures"
+                        },
+                        "price": {
+                            "type": "number",
+                            "format": "float"
+                        },
+                        "notes": {
+                            "type": "string",
+                            "nullable": true
+                        },
+                        "is_active": {
+                            "type": "integer",
+                            "description": "1=active, 0=inactive"
+                        },
+                        "is_deleted": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "service_img": {
+                            "type": "string",
+                            "nullable": true,
+                            "description": "URL or path to service image"
+                        },
+                        "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        },
+                        "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        }
+                    }
+                },
+                "ServiceInput": {
+                    "type": "object",
+                    "required": [
+                        "title",
+                        "qty",
+                        "measure_id",
+                        "price"
+                    ],
+                    "properties": {
+                        "title": {
+                            "type": "string"
+                        },
+                        "qty": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "Quantity value"
+                        },
+                        "measure_id": {
+                            "type": "integer",
+                            "description": "ID from tbl_measures"
+                        },
+                        "price": {
+                            "type": "number",
+                            "format": "float"
+                        },
+                        "notes": {
+                            "type": "string"
+                        },
+                        "is_active": {
+                            "type": "integer",
+                            "description": "1=active, 0=inactive",
+                            "default": 1
+                        },
+                        "service_img": {
+                            "type": "string",
+                            "description": "URL or path to service image"
+                        }
+                    }
+                },
+                "Society": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "zone_id": {
+                            "type": "integer"
+                        },
+                        "zone_title": {
+                            "type": "string",
+                            "readOnly": true,
+                            "description": "Title of the associated zone (added by query)"
+                        },
+                        "is_active": {
+                            "type": "integer",
+                            "description": "1=active, 0=inactive"
+                        },
+                        "is_deleted": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        },
+                        "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        }
+                    }
+                },
+                "SocietyInput": {
+                    "type": "object",
+                    "required": [
+                        "name",
+                        "zone_id"
+                    ],
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "zone_id": {
+                            "type": "integer"
+                        },
+                        "is_active": {
+                            "type": "integer",
+                            "description": "1=active, 0=inactive",
+                            "default": 1
+                        }
+                    }
+                },
+                "User": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "firstname": {
+                            "type": "string"
+                        },
+                        "lastname": {
+                            "type": "string"
+                        },
+                        "phone": {
+                            "type": "string"
+                        },
+                        "email": {
+                            "type": "string",
+                            "format": "email",
+                            "nullable": true
+                        },
+                        "role_id": {
+                            "type": "integer"
+                        },
+                        "address_1": {
+                            "type": "string",
+                            "nullable": true
+                        },
+                        "address_2": {
+                            "type": "string",
+                            "nullable": true
+                        },
+                        "city": {
+                            "type": "string"
+                        },
+                        "state": {
+                            "type": "string"
+                        },
+                        "lattitude": {
+                            "type": "number",
+                            "format": "float",
+                            "nullable": true
+                        },
+                        "longitude": {
+                            "type": "number",
+                            "format": "float",
+                            "nullable": true
+                        },
+                        "zone_id": {
+                            "type": "integer",
+                            "nullable": true
+                        },
+                        "society_id": {
+                            "type": "integer",
+                            "nullable": true
+                        },
+                        "is_active": {
+                            "type": "integer",
+                            "description": "0=inactive, 1=active"
+                        },
+                        "is_deleted": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        },
+                        "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        },
+                        "referral_code": {
+                            "type": "string",
+                            "readOnly": true
+                        },
+                        "referral_points": {
+                            "type": "integer"
+                        },
+                        "total_quantity_remain": {
+                            "type": "integer"
+                        },
+                        "deposit": {
+                            "type": "number",
+                            "format": "double"
+                        },
+                        "total_amount": {
+                            "type": "number",
+                            "format": "double"
+                        },
+                        "due_amount": {
+                            "type": "number",
+                            "format": "double"
+                        }
+                    }
+                },
+                "UserInputRequired": {
+                    "type": "object",
+                    "required": [
+                        "firstname",
+                        "lastname",
+                        "phone",
+                        "password",
+                        "role_id",
+                        "city",
+                        "state"
+                    ],
+                    "properties": {
+                        "firstname": {
+                            "type": "string"
+                        },
+                        "lastname": {
+                            "type": "string"
+                        },
+                        "phone": {
+                            "type": "string"
+                        },
+                        "password": {
+                            "type": "string",
+                            "format": "password",
+                            "minLength": 6
+                        },
+                        "email": {
+                            "type": "string",
+                            "format": "email"
+                        },
+                        "role_id": {
+                            "type": "integer"
+                        },
+                        "address_1": {
+                            "type": "string"
+                        },
+                        "address_2": {
+                            "type": "string"
+                        },
+                        "city": {
+                            "type": "string"
+                        },
+                        "state": {
+                            "type": "string"
+                        },
+                        "zone_id": {
+                            "type": "integer"
+                        },
+                        "society_id": {
+                            "type": "integer"
+                        },
+                        "is_active": {
+                            "type": "integer",
+                            "description": "0=inactive, 1=active",
+                            "default": 1
+                        },
+                        "deposit": {
+                            "type": "number",
+                            "format": "double",
+                            "default": 0
+                        },
+                        "due_amount": {
+                            "type": "number",
+                            "format": "double",
+                            "default": 0
+                        }
+                    }
+                },
+                "UserInputOptional": {
+                    "type": "object",
+                    "properties": {
+                        "firstname": {
+                            "type": "string"
+                        },
+                        "lastname": {
+                            "type": "string"
+                        },
+                        "phone": {
+                            "type": "string"
+                        },
+                        "email": {
+                            "type": "string",
+                            "format": "email"
+                        },
+                        "address_1": {
+                            "type": "string"
+                        },
+                        "address_2": {
+                            "type": "string"
+                        },
+                        "city": {
+                            "type": "string"
+                        },
+                        "state": {
+                            "type": "string"
+                        },
+                        "zone_id": {
+                            "type": "integer"
+                        },
+                        "society_id": {
+                            "type": "integer"
+                        },
+                        "is_active": {
+                            "type": "integer",
+                            "description": "0=inactive, 1=active"
+                        },
+                        "deposit": {
+                            "type": "number",
+                            "format": "double"
+                        },
+                        "due_amount": {
+                            "type": "number",
+                            "format": "double"
+                        }
+                    }
+                },
+                "Zone": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "title": {
+                            "type": "string"
+                        },
+                        "from_area": {
+                            "type": "string",
+                            "nullable": true
+                        },
+                        "to_area": {
+                            "type": "string",
+                            "nullable": true
+                        },
+                        "is_active": {
+                            "type": "integer",
+                            "description": "1=active, 0=inactive"
+                        },
+                        "is_deleted": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        },
+                        "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        }
+                    }
+                },
+                "ZoneInput": {
+                    "type": "object",
+                    "required": [
+                        "title"
+                    ],
+                    "properties": {
+                        "title": {
+                            "type": "string"
+                        },
+                        "from_area": {
+                            "type": "string"
+                        },
+                        "to_area": {
+                            "type": "string"
+                        },
+                        "is_active": {
+                            "type": "integer",
+                            "description": "1=active, 0=inactive",
+                            "default": 1
+                        }
+                    }
+                }
+            },
+            "parameters": {
+                "MeasureIdParam": {
+                    "in": "path",
+                    "name": "id",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    },
+                    "description": "The measure ID"
+                },
+                "DeliveryIdParam": {
+                    "in": "path",
+                    "name": "id",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    },
+                    "description": "The delivery record ID"
+                },
+                "OrderIdParam": {
+                    "in": "path",
+                    "name": "id",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    },
+                    "description": "The order ID"
+                },
+                "ServiceIdParam": {
+                    "in": "path",
+                    "name": "id",
+                    "required": true,
+                    "schema": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "description": "The service ID"
+                },
+                "SocietyIdParam": {
+                    "in": "path",
+                    "name": "id",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    },
+                    "description": "The society ID"
+                },
+                "UserIdParam": {
+                    "in": "path",
+                    "name": "id",
+                    "required": true,
+                    "schema": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "description": "The user ID"
+                },
+                "ZoneIdParam": {
+                    "in": "path",
+                    "name": "id",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    },
+                    "description": "The zone ID"
+                }
+            }
+        },
+        "security": [
+            {
+                "bearerAuth": []
+            }
+        ],
+        "paths": {
+            "/auth/login": {
+                "post": {
+                    "summary": "Log in a user",
+                    "tags": [
+                        "Authentication"
+                    ],
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthLoginInput"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Login successful, returns JWT token and user info.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/AuthLoginResponse"
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Bad Request (Validation Error)"
+                        },
+                        "401": {
+                            "description": "Unauthorized (Invalid credentials)"
+                        },
+                        "500": {
+                            "description": "Internal server error"
+                        }
+                    }
+                }
+            },
+            "/measures": {
+                "get": {
+                    "summary": "Get all active measures",
+                    "tags": [
+                        "Measures"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "List of measures",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/Measure"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                },
+                "post": {
+                    "summary": "Create a new measure",
+                    "tags": [
+                        "Measures"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MeasureInput"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "201": {
+                            "description": "Measure created",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "properties": {
+                                            "message": {
+                                                "type": "string"
+                                            },
+                                            "id": {
+                                                "type": "integer"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Validation Error"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                }
+            },
+            "/measures/{id}": {
+                "get": {
+                    "summary": "Get a measure by ID",
+                    "tags": [
+                        "Measures"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/MeasureIdParam"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Measure data",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/Measure"
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Invalid ID"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden"
+                        },
+                        "404": {
+                            "description": "Measure not found"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                },
+                "patch": {
+                    "summary": "Update a measure",
+                    "tags": [
+                        "Measures"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/MeasureIdParam"
+                        }
+                    ],
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MeasureInput"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Measure updated"
+                        },
+                        "400": {
+                            "description": "Validation Error"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden"
+                        },
+                        "404": {
+                            "description": "Measure not found"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                },
+                "delete": {
+                    "summary": "Delete a measure (Soft delete)",
+                    "tags": [
+                        "Measures"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/MeasureIdParam"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Measure deleted"
+                        },
+                        "400": {
+                            "description": "Invalid ID or Measure in use"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden"
+                        },
+                        "404": {
+                            "description": "Measure not found"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                }
+            },
+            "/mocks": {
+                "get": {
+                    "summary": "Get a list of mock items",
+                    "tags": [
+                        "Mocks"
+                    ],
+                    "description": "Returns a simple list containing one mock item.",
+                    "responses": {
+                        "200": {
+                            "description": "A list of mock items.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/Mock"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Bad Request - Invalid parameters"
+                        },
+                        "401": {
+                            "description": "Unauthorized - Authentication required"
+                        },
+                        "403": {
+                            "description": "Forbidden - Insufficient permissions"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                }
+            },
+            "/deliveries": {
+                "get": {
+                    "summary": "Get all delivery records (consider pagination)",
+                    "tags": [
+                        "Deliveries"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "in": "query",
+                            "name": "orderId",
+                            "schema": {
+                                "type": "integer"
+                            },
+                            "description": "Filter by Order ID"
+                        },
+                        {
+                            "in": "query",
+                            "name": "deliveryBoyId",
+                            "schema": {
+                                "type": "integer"
+                            },
+                            "description": "Filter by Delivery Boy ID"
+                        },
+                        {
+                            "in": "query",
+                            "name": "startDate",
+                            "schema": {
+                                "type": "string",
+                                "format": "date"
+                            },
+                            "description": "Filter by delivery date (start)"
+                        },
+                        {
+                            "in": "query",
+                            "name": "endDate",
+                            "schema": {
+                                "type": "string",
+                                "format": "date"
+                            },
+                            "description": "Filter by delivery date (end)"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "List of deliveries",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/OrderDelivery"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                },
+                "post": {
+                    "summary": "Create a new delivery record",
+                    "tags": [
+                        "Deliveries"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrderDeliveryInput"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "201": {
+                            "description": "Delivery created",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "properties": {
+                                            "message": {
+                                                "type": "string"
+                                            },
+                                            "id": {
+                                                "type": "integer"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Validation Error"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                }
+            },
+            "/deliveries/by-order/{orderId}": {
+                "get": {
+                    "summary": "Get deliveries for a specific order ID",
+                    "tags": [
+                        "Deliveries"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "in": "path",
+                            "name": "orderId",
+                            "required": true,
+                            "schema": {
+                                "type": "integer",
+                                "minimum": 1
+                            },
+                            "description": "The ID of the order to fetch deliveries for."
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "List of deliveries",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/OrderDelivery"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Invalid Order ID"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "404": {
+                            "description": "Order not found (no deliveries, or order itself invalid)"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                }
+            },
+            "/deliveries/by-delivery-boy/{deliveryBoyId}": {
+                "get": {
+                    "summary": "Get deliveries assigned to a specific delivery boy ID",
+                    "tags": [
+                        "Deliveries"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/UserIdParam"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "List of deliveries",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/OrderDelivery"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Invalid Delivery Boy ID"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                }
+            },
+            "/deliveries/{id}": {
+                "get": {
+                    "summary": "Get a specific delivery record by ID",
+                    "tags": [
+                        "Deliveries"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/DeliveryIdParam"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Delivery data",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/OrderDelivery"
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Invalid ID"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "404": {
+                            "description": "Delivery not found"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                },
+                "patch": {
+                    "summary": "Update a delivery record (e.g., returned quantity, status)",
+                    "tags": [
+                        "Deliveries"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/DeliveryIdParam"
+                        }
+                    ],
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrderDeliveryUpdateInput"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Delivery updated"
+                        },
+                        "400": {
+                            "description": "Validation Error"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden"
+                        },
+                        "404": {
+                            "description": "Delivery not found"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                }
+            },
+            "/orders": {
+                "get": {
+                    "summary": "Get all orders",
+                    "tags": [
+                        "Orders"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "in": "query",
+                            "name": "userId",
+                            "schema": {
+                                "type": "integer"
+                            },
+                            "required": false,
+                            "description": "Filter orders by user ID (customer)."
+                        },
+                        {
+                            "in": "query",
+                            "name": "startDate",
+                            "schema": {
+                                "type": "string",
+                                "format": "date"
+                            },
+                            "required": false,
+                            "description": "Filter orders on or after this date (YYYY-MM-DD)."
+                        },
+                        {
+                            "in": "query",
+                            "name": "endDate",
+                            "schema": {
+                                "type": "string",
+                                "format": "date"
+                            },
+                            "required": false,
+                            "description": "Filter orders on or before this date (YYYY-MM-DD)."
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "List of orders",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/Order"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                },
+                "post": {
+                    "summary": "Create a new order for the logged-in user",
+                    "tags": [
+                        "Orders"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrderInput"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "201": {
+                            "description": "Order created",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "properties": {
+                                            "message": {
+                                                "type": "string"
+                                            },
+                                            "id": {
+                                                "type": "integer"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Validation Error"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                }
+            },
+            "/orders/user/{userId}": {
+                "get": {
+                    "summary": "Get all orders for a specific user ID",
+                    "tags": [
+                        "Orders"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/UserIdParam"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "List of orders",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/Order"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Invalid User ID"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden (Admin or matching user required)"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                }
+            },
+            "/orders/{id}": {
+                "get": {
+                    "summary": "Get an order by ID",
+                    "tags": [
+                        "Orders"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/OrderIdParam"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Order data",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/Order"
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Invalid ID"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden (if user check implemented)"
+                        },
+                        "404": {
+                            "description": "Order not found"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                },
+                "patch": {
+                    "summary": "Update an order (e.g., quantity, discount)",
+                    "tags": [
+                        "Orders"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/OrderIdParam"
+                        }
+                    ],
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrderUpdateInput"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Order updated"
+                        },
+                        "400": {
+                            "description": "Validation Error or Invalid ID"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden (Admin or user owner required)"
+                        },
+                        "404": {
+                            "description": "Order not found"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                },
+                "delete": {
+                    "summary": "Delete an order (Soft delete - requires DB schema update)",
+                    "tags": [
+                        "Orders"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/OrderIdParam"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Order deleted"
+                        },
+                        "400": {
+                            "description": "Invalid ID or Delete not supported by schema"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden (Admin required)"
+                        },
+                        "404": {
+                            "description": "Order not found"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                }
+            },
+            "/order-statuses": {
+                "get": {
+                    "summary": "Get all available order statuses",
+                    "tags": [
+                        "Order Statuses"
+                    ],
+                    "description": "Retrieves a list of all possible statuses an order delivery can have.",
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "A list of order statuses.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/OrderStatus"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                }
+            },
+            "/roles": {
+                "get": {
+                    "summary": "Retrieve a list of all active roles",
+                    "tags": [
+                        "Roles"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "A list of active roles.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/Role"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden (Admin Required)"
+                        },
+                        "500": {
+                            "description": "Internal server error"
+                        }
+                    }
+                },
+                "post": {
+                    "summary": "Create a new role",
+                    "tags": [
+                        "Roles"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoleInput"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "201": {
+                            "description": "Role created successfully.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "message": {
+                                                "type": "string"
+                                            },
+                                            "id": {
+                                                "type": "integer"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Bad Request (Validation Error)"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden (Admin Required)"
+                        },
+                        "409": {
+                            "description": "Conflict (Role name exists)"
+                        },
+                        "500": {
+                            "description": "Internal server error"
+                        }
+                    }
+                }
+            },
+            "/roles/{id}": {
+                "get": {
+                    "summary": "Get a specific role by ID",
+                    "tags": [
+                        "Roles"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "in": "path",
+                            "name": "id",
+                            "schema": {
+                                "type": "integer"
+                            },
+                            "required": true,
+                            "description": "Numeric ID of the role to get."
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Role data.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/Role"
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Bad Request (Invalid ID)"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden (Admin Required)"
+                        },
+                        "404": {
+                            "description": "Role not found"
+                        },
+                        "500": {
+                            "description": "Internal server error"
+                        }
+                    }
+                },
+                "patch": {
+                    "summary": "Update a role by ID",
+                    "tags": [
+                        "Roles"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "in": "path",
+                            "name": "id",
+                            "schema": {
+                                "type": "integer"
+                            },
+                            "required": true,
+                            "description": "Numeric ID of the role to update."
+                        }
+                    ],
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoleInput"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Role updated successfully."
+                        },
+                        "400": {
+                            "description": "Bad Request (Validation Error)"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden (Admin Required)"
+                        },
+                        "404": {
+                            "description": "Role not found"
+                        },
+                        "409": {
+                            "description": "Conflict (Role name exists)"
+                        },
+                        "500": {
+                            "description": "Internal server error"
+                        }
+                    }
+                },
+                "delete": {
+                    "summary": "Delete a role by ID (Soft delete)",
+                    "tags": [
+                        "Roles"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "in": "path",
+                            "name": "id",
+                            "schema": {
+                                "type": "integer"
+                            },
+                            "required": true,
+                            "description": "Numeric ID of the role to delete."
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Role deleted successfully."
+                        },
+                        "400": {
+                            "description": "Bad Request (Invalid ID or Role in use)"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden (Admin Required)"
+                        },
+                        "404": {
+                            "description": "Role not found"
+                        },
+                        "500": {
+                            "description": "Internal server error"
+                        }
+                    }
+                }
+            },
+            "/services": {
+                "get": {
+                    "summary": "Get all active services",
+                    "tags": [
+                        "Services"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "List of services",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/Service"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                },
+                "post": {
+                    "summary": "Create a new service (Admin only)",
+                    "tags": [
+                        "Services"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "multipart/form-data": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServiceInput"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServiceInput"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "201": {
+                            "description": "Service created",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "properties": {
+                                            "message": {
+                                                "type": "string"
+                                            },
+                                            "id": {
+                                                "type": "integer"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Validation Error"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                }
+            },
+            "/services/{id}": {
+                "get": {
+                    "summary": "Get a service by ID",
+                    "tags": [
+                        "Services"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/ServiceIdParam"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Service data",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/Service"
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Invalid ID"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "404": {
+                            "description": "Service not found"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                },
+                "patch": {
+                    "summary": "Update a service (Admin only)",
+                    "tags": [
+                        "Services"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/ServiceIdParam"
+                        }
+                    ],
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "multipart/form-data": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServiceInput"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServiceInput"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Service updated"
+                        },
+                        "400": {
+                            "description": "Validation Error"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden"
+                        },
+                        "404": {
+                            "description": "Service not found"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                },
+                "delete": {
+                    "summary": "Delete a service (Admin only)",
+                    "tags": [
+                        "Services"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/ServiceIdParam"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Service deleted"
+                        },
+                        "400": {
+                            "description": "Validation Error"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden"
+                        },
+                        "404": {
+                            "description": "Service not found"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                }
+            },
+            "/societies": {
+                "get": {
+                    "summary": "Get all active societies (optionally filtered by zone)",
+                    "tags": [
+                        "Societies"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "in": "query",
+                            "name": "zoneId",
+                            "schema": {
+                                "type": "integer"
+                            },
+                            "required": false,
+                            "description": "Filter societies by zone ID."
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "List of societies",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/Society"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                },
+                "post": {
+                    "summary": "Create a new society",
+                    "tags": [
+                        "Societies"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SocietyInput"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "201": {
+                            "description": "Society created",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "properties": {
+                                            "message": {
+                                                "type": "string"
+                                            },
+                                            "id": {
+                                                "type": "integer"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Validation Error"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                }
+            },
+            "/societies/{id}": {
+                "get": {
+                    "summary": "Get a society by ID",
+                    "tags": [
+                        "Societies"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/SocietyIdParam"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Society data",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/Society"
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Invalid ID"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden"
+                        },
+                        "404": {
+                            "description": "Society not found"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                },
+                "patch": {
+                    "summary": "Update a society",
+                    "tags": [
+                        "Societies"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/SocietyIdParam"
+                        }
+                    ],
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SocietyInput"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Society updated"
+                        },
+                        "400": {
+                            "description": "Validation Error"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden"
+                        },
+                        "404": {
+                            "description": "Society not found"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                },
+                "delete": {
+                    "summary": "Delete a society (Soft delete)",
+                    "tags": [
+                        "Societies"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/SocietyIdParam"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Society deleted"
+                        },
+                        "400": {
+                            "description": "Invalid ID or Society in use"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden"
+                        },
+                        "404": {
+                            "description": "Society not found"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                }
+            },
+            "/users/me": {
+                "get": {
+                    "summary": "Get the profile of the currently logged-in user",
+                    "tags": [
+                        "Users"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Current user profile data.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/User"
+                                    }
+                                }
+                            }
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "404": {
+                            "description": "User profile not found"
+                        },
+                        "500": {
+                            "description": "Internal server error"
+                        }
+                    }
+                }
+            },
+            "/users/{id}": {
+                "get": {
+                    "summary": "Retrieve a specific user by ID (Admin only)",
+                    "tags": [
+                        "Users"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/UserIdParam"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "User data found.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/User"
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Bad Request (Invalid ID)"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden (Admin Required)"
+                        },
+                        "404": {
+                            "description": "User not found"
+                        },
+                        "500": {
+                            "description": "Internal server error"
+                        }
+                    }
+                },
+                "delete": {
+                    "summary": "Delete a user by ID (Soft delete) (Admin only)",
+                    "tags": [
+                        "Users"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "in": "path",
+                            "name": "id",
+                            "required": true,
+                            "schema": {
+                                "type": "integer",
+                                "minimum": 1
+                            },
+                            "description": "The user ID to delete"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "User deleted successfully.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "message": {
+                                                "type": "string",
+                                                "example": "User deleted successfully"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Bad Request (Invalid ID)",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "message": {
+                                                "type": "string",
+                                                "example": "Invalid user ID"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden (Admin Required)"
+                        },
+                        "404": {
+                            "description": "User not found"
+                        },
+                        "500": {
+                            "description": "Internal server error"
+                        }
+                    }
+                },
+                "patch": {
+                    "summary": "Update a user by ID (Admin only)",
+                    "tags": [
+                        "Users"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/UserIdParam"
+                        }
+                    ],
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserInputOptional"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "User updated successfully."
+                        },
+                        "400": {
+                            "description": "Bad Request (Validation Error or Duplicate Phone/Invalid ID)"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden (Admin Required)"
+                        },
+                        "404": {
+                            "description": "User not found"
+                        },
+                        "500": {
+                            "description": "Internal server error"
+                        }
+                    }
+                }
+            },
+            "/users": {
+                "get": {
+                    "summary": "Retrieve a list of all users (Admin only)",
+                    "tags": [
+                        "Users"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "in": "query",
+                            "name": "roleId",
+                            "schema": {
+                                "type": "integer"
+                            },
+                            "required": false,
+                            "description": "Filter users by role ID."
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "A list of users.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/User"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden (Admin Required)"
+                        },
+                        "500": {
+                            "description": "Internal server error"
+                        }
+                    }
+                },
+                "post": {
+                    "summary": "Create a new user (Admin only)",
+                    "tags": [
+                        "Users"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserInputRequired"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "201": {
+                            "description": "User created successfully.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "message": {
+                                                "type": "string"
+                                            },
+                                            "id": {
+                                                "type": "integer"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Bad Request (Validation Error or Duplicate Phone/Invalid ID)"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden (Admin Required)"
+                        },
+                        "500": {
+                            "description": "Internal server error"
+                        }
+                    }
+                }
+            },
+            "/zones": {
+                "get": {
+                    "summary": "Get all active zones",
+                    "tags": [
+                        "Zones"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "List of zones",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/Zone"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                },
+                "post": {
+                    "summary": "Create a new zone",
+                    "tags": [
+                        "Zones"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ZoneInput"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "201": {
+                            "description": "Zone created",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "properties": {
+                                            "message": {
+                                                "type": "string"
+                                            },
+                                            "id": {
+                                                "type": "integer"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Validation Error"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                }
+            },
+            "/zones/{id}": {
+                "get": {
+                    "summary": "Get a zone by ID",
+                    "tags": [
+                        "Zones"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/ZoneIdParam"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Zone data",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/Zone"
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Invalid ID"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden"
+                        },
+                        "404": {
+                            "description": "Zone not found"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                },
+                "patch": {
+                    "summary": "Update a zone",
+                    "tags": [
+                        "Zones"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/ZoneIdParam"
+                        }
+                    ],
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ZoneInput"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Zone updated"
+                        },
+                        "400": {
+                            "description": "Validation Error"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden"
+                        },
+                        "404": {
+                            "description": "Zone not found"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                },
+                "delete": {
+                    "summary": "Delete a zone (Soft delete)",
+                    "tags": [
+                        "Zones"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/ZoneIdParam"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Zone deleted"
+                        },
+                        "400": {
+                            "description": "Invalid ID or Zone in use"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden"
+                        },
+                        "404": {
+                            "description": "Zone not found"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                }
+            }
+        },
+        "tags": [
+            {
+                "name": "Authentication",
+                "description": "User login and authentication"
+            },
+            {
+                "name": "Measures",
+                "description": "Management of product measurement units (e.g., Liter, Kg)"
+            },
+            {
+                "name": "Mocks",
+                "description": "Mock endpoints for testing"
+            },
+            {
+                "name": "Deliveries",
+                "description": "Management of order deliveries"
+            },
+            {
+                "name": "Orders",
+                "description": "Management of customer orders"
+            },
+            {
+                "name": "Roles",
+                "description": "API for managing user roles (Admin access required)"
+            },
+            {
+                "name": "Services",
+                "description": "Management of products/services offered (e.g., Water Bottles)"
+            },
+            {
+                "name": "Societies",
+                "description": "Management of societies within zones"
+            },
+            {
+                "name": "Users",
+                "description": "User management and profile operations"
+            },
+            {
+                "name": "Zones",
+                "description": "Management of delivery zones"
+            }
+        ]
+    },
+    "customOptions": {}
+}

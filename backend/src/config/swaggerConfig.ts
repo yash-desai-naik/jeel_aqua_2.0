@@ -14,6 +14,10 @@ const options: swaggerJsdoc.Options = {
     },
     servers: [
       {
+        url: `https://jeelaquabackend20.vercel.app/api`, // Add your Vercel URL
+        description: 'Production server',
+      },
+      {
         url: `http://localhost:${process.env.PORT || 3001}/api`, // Adjust based on your base path
         description: 'Development server',
       },
