@@ -1,0 +1,208 @@
+                  }
+                    }
+                },
+                "PaymentHistory": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "buyer_id": {
+                            "type": "integer"
+                        },
+                        "payment_mode": {
+                            "type": "string",
+                            "enum": [
+                                "cash",
+                                "cheque",
+                                "paytm",
+                                "gpay",
+                                "phonepe",
+                                "netbanking"
+                            ]
+                        },
+                        "payment_received_by": {
+                            "type": "integer",
+                            "description": "User ID of employee/admin who received payment"
+                        },
+                        "payment_received": {
+                            "type": "number",
+                            "format": "double"
+                        },
+                        "payment_due": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "Due amount *at the time of this payment* (may need clarification)"
+                        },
+                        "notes": {
+                            "type": "string",
+                            "nullable": true
+                        },
+                        "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        }
+                    }
+                },
+                "PaymentHistoryInput": {
+                    "type": "object",
+                    "required": [
+                        "buyer_id",
+                        "payment_mode",
+                        "payment_received"
+                    ],
+                    "properties": {
+                        "buyer_id": {
+                            "type": "integer"
+                        },
+                        "payment_mode": {
+                            "type": "string",
+                            "enum": [
+                                "cash",
+                                "cheque",
+                                "paytm",
+                                "gpay",
+                                "phonepe",
+                                "netbanking"
+                            ]
+                        },
+                        "payment_received": {
+                            "type": "number",
+                            "format": "double"
+                        },
+                        "notes": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "Role": {
+                    "type": "object",
+                    "required": [
+                        "rolename"
+                    ],
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "description": "The auto-generated ID of the role."
+                        },
+                        "rolename": {
+                            "type": "string",
+                            "description": "The name of the role.",
+                            "example": "Admin"
+                        },
+                        "is_active": {
+                            "type": "integer",
+                            "description": "Whether the role is active (1) or inactive (0).",
+                            "example": 1
+                        },
+                        "is_deleted": {
+                            "type": "integer",
+                            "description": "Whether the role is marked as deleted (1) or not (0).",
+                            "readOnly": true
+                        },
+                        "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "The date the role was created.",
+                            "readOnly": true
+                        },
+                        "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "The date the role was last updated.",
+                            "readOnly": true
+                        }
+                    },
+                    "example": {
+                        "id": 1,
+                        "rolename": "Admin",
+                        "is_active": 1,
+                        "created_at": "2024-01-01T12:00:00.000Z",
+                        "updated_at": "2024-01-01T12:00:00.000Z"
+                    }
+                },
+                "RoleInput": {
+                    "type": "object",
+                    "required": [
+                        "rolename"
+                    ],
+                    "properties": {
+                        "rolename": {
+                            "type": "string",
+                            "description": "The name of the role.",
+                            "example": "Employee"
+                        },
+                        "is_active": {
+                            "type": "integer",
+                            "description": "Set role status (1 for active, 0 for inactive).",
+                            "example": 1
+                        }
+                    }
+                },
+                "Service": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "title": {
+                            "type": "string"
+                        },
+                        "qty": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "Quantity value"
+                        },
+                        "measure_id": {
+                            "type": "integer",
+                            "description": "FK to tbl_measures"
+                        },
+                        "price": {
+                            "type": "number",
+                            "format": "float"
+                        },
+                        "notes": {
+                            "type": "string",
+                            "nullable": true
+                        },
+                        "is_active": {
+                            "type": "integer",
+                            "description": "1=active, 0=inactive"
+                        },
+                        "is_deleted": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "service_img": {
+                            "type": "string",
+                            "nullable": true,
+                            "description": "URL or path to service image"
+                        },
+                        "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        },
+                        "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        }
+                    }
+                },
+                "ServiceInput": {
+                    "type": "object",
+                    "required": [
+                        "title",
+                        "qty",
+                        "measure_id",
+                        "price"
+                    ],
+                    "properties": {
+                        "title": {
+                            "type": "string"
+                        },
+                       

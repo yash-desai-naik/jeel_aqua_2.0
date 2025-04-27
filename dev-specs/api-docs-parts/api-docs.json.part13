@@ -1,0 +1,217 @@
+      },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden"
+                        },
+                        "404": {
+                            "description": "Society not found"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                },
+                "patch": {
+                    "summary": "Update a society",
+                    "tags": [
+                        "Societies"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/SocietyIdParam"
+                        }
+                    ],
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SocietyInput"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Society updated"
+                        },
+                        "400": {
+                            "description": "Validation Error"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden"
+                        },
+                        "404": {
+                            "description": "Society not found"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                },
+                "delete": {
+                    "summary": "Delete a society (Soft delete)",
+                    "tags": [
+                        "Societies"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/SocietyIdParam"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Society deleted"
+                        },
+                        "400": {
+                            "description": "Invalid ID or Society in use"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden"
+                        },
+                        "404": {
+                            "description": "Society not found"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                }
+            },
+            "/users/me": {
+                "get": {
+                    "summary": "Get the profile of the currently logged-in user",
+                    "tags": [
+                        "Users"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Current user profile data.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/User"
+                                    }
+                                }
+                            }
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "404": {
+                            "description": "User profile not found"
+                        },
+                        "500": {
+                            "description": "Internal server error"
+                        }
+                    }
+                }
+            },
+            "/users/{id}": {
+                "get": {
+                    "summary": "Retrieve a specific user by ID (Admin only)",
+                    "tags": [
+                        "Users"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/UserIdParam"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "User data found.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/User"
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Bad Request (Invalid ID)"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden (Admin Required)"
+                        },
+                        "404": {
+                            "description": "User not found"
+                        },
+                        "500": {
+                            "description": "Internal server error"
+                        }
+                    }
+                },
+                "delete": {
+                    "summary": "Delete a user by ID (Soft delete) (Admin only)",
+                    "tags": [
+                        "Users"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "in": "path",
+                            "name": "id",
+                            "required": true,
+                            "schema": {
+                                "type": "integer",
+                                "minimum": 1
+                            },
+                            "description": "The user ID to delete"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "User deleted successfully.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "message": {
+                                                "type": "string",
+                                                "example": "User deleted successfully"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Bad Request (Invalid ID)"

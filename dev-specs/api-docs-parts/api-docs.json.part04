@@ -1,0 +1,217 @@
+ "qty": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "Quantity value"
+                        },
+                        "measure_id": {
+                            "type": "integer",
+                            "description": "ID from tbl_measures"
+                        },
+                        "price": {
+                            "type": "number",
+                            "format": "float"
+                        },
+                        "notes": {
+                            "type": "string"
+                        },
+                        "is_active": {
+                            "type": "integer",
+                            "description": "1=active, 0=inactive",
+                            "default": 1
+                        },
+                        "service_img": {
+                            "type": "string",
+                            "description": "URL or path to service image"
+                        }
+                    }
+                },
+                "Society": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "zone_id": {
+                            "type": "integer"
+                        },
+                        "zone_title": {
+                            "type": "string",
+                            "readOnly": true,
+                            "description": "Title of the associated zone (added by query)"
+                        },
+                        "is_active": {
+                            "type": "integer",
+                            "description": "1=active, 0=inactive"
+                        },
+                        "is_deleted": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        },
+                        "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        }
+                    }
+                },
+                "SocietyInput": {
+                    "type": "object",
+                    "required": [
+                        "name",
+                        "zone_id"
+                    ],
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "zone_id": {
+                            "type": "integer"
+                        },
+                        "is_active": {
+                            "type": "integer",
+                            "description": "1=active, 0=inactive",
+                            "default": 1
+                        }
+                    }
+                },
+                "User": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "firstname": {
+                            "type": "string"
+                        },
+                        "lastname": {
+                            "type": "string"
+                        },
+                        "phone": {
+                            "type": "string"
+                        },
+                        "email": {
+                            "type": "string",
+                            "format": "email",
+                            "nullable": true
+                        },
+                        "role_id": {
+                            "type": "integer"
+                        },
+                        "address_1": {
+                            "type": "string",
+                            "nullable": true
+                        },
+                        "address_2": {
+                            "type": "string",
+                            "nullable": true
+                        },
+                        "city": {
+                            "type": "string"
+                        },
+                        "state": {
+                            "type": "string"
+                        },
+                        "lattitude": {
+                            "type": "number",
+                            "format": "float",
+                            "nullable": true
+                        },
+                        "longitude": {
+                            "type": "number",
+                            "format": "float",
+                            "nullable": true
+                        },
+                        "zone_id": {
+                            "type": "integer",
+                            "nullable": true
+                        },
+                        "society_id": {
+                            "type": "integer",
+                            "nullable": true
+                        },
+                        "is_active": {
+                            "type": "integer",
+                            "description": "0=inactive, 1=active"
+                        },
+                        "is_deleted": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        },
+                        "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        },
+                        "referral_code": {
+                            "type": "string",
+                            "readOnly": true
+                        },
+                        "referral_points": {
+                            "type": "integer"
+                        },
+                        "total_quantity_remain": {
+                            "type": "integer"
+                        },
+                        "deposit": {
+                            "type": "number",
+                            "format": "double"
+                        },
+                        "total_amount": {
+                            "type": "number",
+                            "format": "double"
+                        },
+                        "due_amount": {
+                            "type": "number",
+                            "format": "double"
+                        }
+                    }
+                },
+                "UserInputRequired": {
+                    "type": "object",
+                    "required": [
+                        "firstname",
+                        "lastname",
+                        "phone",
+                        "password",
+                        "role_id",
+                        "city",
+                        "state"
+                    ],
+                    "properties": {
+                        "firstname": {
+                            "type": "string"
+                        },
+                        "lastname": {
+                            "type": "string"
+                        },
+                        "phone": {
+                            "type": "string"
+                        },
+                        "password": {
+                            "type": "string",
+                            "format": "password",
+                            "minLength": 6
+                        },
+                        "email": {
+                            "type": "string",
+                            "format": "email"
+                        },
+                        "role_id": {
+                            "type": "integer"
+                        },
+         

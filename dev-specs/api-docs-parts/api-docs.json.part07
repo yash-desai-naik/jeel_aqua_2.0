@@ -1,0 +1,209 @@
+am"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Measure deleted"
+                        },
+                        "400": {
+                            "description": "Invalid ID or Measure in use"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden"
+                        },
+                        "404": {
+                            "description": "Measure not found"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                }
+            },
+            "/mocks": {
+                "get": {
+                    "summary": "Get a list of mock items",
+                    "tags": [
+                        "Mocks"
+                    ],
+                    "description": "Returns a simple list containing one mock item.",
+                    "responses": {
+                        "200": {
+                            "description": "A list of mock items.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/Mock"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Bad Request - Invalid parameters"
+                        },
+                        "401": {
+                            "description": "Unauthorized - Authentication required"
+                        },
+                        "403": {
+                            "description": "Forbidden - Insufficient permissions"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                }
+            },
+            "/deliveries": {
+                "get": {
+                    "summary": "Get all delivery records (consider pagination)",
+                    "tags": [
+                        "Deliveries"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "in": "query",
+                            "name": "orderId",
+                            "schema": {
+                                "type": "integer"
+                            },
+                            "description": "Filter by Order ID"
+                        },
+                        {
+                            "in": "query",
+                            "name": "deliveryBoyId",
+                            "schema": {
+                                "type": "integer"
+                            },
+                            "description": "Filter by Delivery Boy ID"
+                        },
+                        {
+                            "in": "query",
+                            "name": "startDate",
+                            "schema": {
+                                "type": "string",
+                                "format": "date"
+                            },
+                            "description": "Filter by delivery date (start)"
+                        },
+                        {
+                            "in": "query",
+                            "name": "endDate",
+                            "schema": {
+                                "type": "string",
+                                "format": "date"
+                            },
+                            "description": "Filter by delivery date (end)"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "List of deliveries",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/OrderDelivery"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                },
+                "post": {
+                    "summary": "Create a new delivery record",
+                    "tags": [
+                        "Deliveries"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrderDeliveryInput"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "201": {
+                            "description": "Delivery created",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "properties": {
+                                            "message": {
+                                                "type": "string"
+                                            },
+                                            "id": {
+                                                "type": "integer"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Validation Error"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                }
+            },
+            "/deliveries/by-order/{orderId}": {
+                "get": {
+                    "summary": "Get deliveries for a specific order ID",
+                    "tags": [
+                        "Deliveries"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "in": "path",
+                            "name": "orderId",
+                            "required": true,
+                            "schema": {
+                                "type": "integer",
+                                "minimum": 1
+                            },
+                            "description": "The ID of the order to fetch deliveries for."
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "List of deliveries",
+                            "content": {
+                                "application/json": {
+  

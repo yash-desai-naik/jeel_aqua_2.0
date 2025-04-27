@@ -1,0 +1,233 @@
+               "address_1": {
+                            "type": "string"
+                        },
+                        "address_2": {
+                            "type": "string"
+                        },
+                        "city": {
+                            "type": "string"
+                        },
+                        "state": {
+                            "type": "string"
+                        },
+                        "zone_id": {
+                            "type": "integer"
+                        },
+                        "society_id": {
+                            "type": "integer"
+                        },
+                        "is_active": {
+                            "type": "integer",
+                            "description": "0=inactive, 1=active",
+                            "default": 1
+                        },
+                        "deposit": {
+                            "type": "number",
+                            "format": "double",
+                            "default": 0
+                        },
+                        "due_amount": {
+                            "type": "number",
+                            "format": "double",
+                            "default": 0
+                        }
+                    }
+                },
+                "UserInputOptional": {
+                    "type": "object",
+                    "properties": {
+                        "firstname": {
+                            "type": "string"
+                        },
+                        "lastname": {
+                            "type": "string"
+                        },
+                        "phone": {
+                            "type": "string"
+                        },
+                        "email": {
+                            "type": "string",
+                            "format": "email"
+                        },
+                        "address_1": {
+                            "type": "string"
+                        },
+                        "address_2": {
+                            "type": "string"
+                        },
+                        "city": {
+                            "type": "string"
+                        },
+                        "state": {
+                            "type": "string"
+                        },
+                        "zone_id": {
+                            "type": "integer"
+                        },
+                        "society_id": {
+                            "type": "integer"
+                        },
+                        "is_active": {
+                            "type": "integer",
+                            "description": "0=inactive, 1=active"
+                        },
+                        "deposit": {
+                            "type": "number",
+                            "format": "double"
+                        },
+                        "due_amount": {
+                            "type": "number",
+                            "format": "double"
+                        }
+                    }
+                },
+                "Zone": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "title": {
+                            "type": "string"
+                        },
+                        "from_area": {
+                            "type": "string",
+                            "nullable": true
+                        },
+                        "to_area": {
+                            "type": "string",
+                            "nullable": true
+                        },
+                        "is_active": {
+                            "type": "integer",
+                            "description": "1=active, 0=inactive"
+                        },
+                        "is_deleted": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        },
+                        "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        }
+                    }
+                },
+                "ZoneInput": {
+                    "type": "object",
+                    "required": [
+                        "title"
+                    ],
+                    "properties": {
+                        "title": {
+                            "type": "string"
+                        },
+                        "from_area": {
+                            "type": "string"
+                        },
+                        "to_area": {
+                            "type": "string"
+                        },
+                        "is_active": {
+                            "type": "integer",
+                            "description": "1=active, 0=inactive",
+                            "default": 1
+                        }
+                    }
+                }
+            },
+            "parameters": {
+                "MeasureIdParam": {
+                    "in": "path",
+                    "name": "id",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    },
+                    "description": "The measure ID"
+                },
+                "DeliveryIdParam": {
+                    "in": "path",
+                    "name": "id",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    },
+                    "description": "The delivery record ID"
+                },
+                "OrderIdParam": {
+                    "in": "path",
+                    "name": "id",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    },
+                    "description": "The order ID"
+                },
+                "ServiceIdParam": {
+                    "in": "path",
+                    "name": "id",
+                    "required": true,
+                    "schema": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "description": "The service ID"
+                },
+                "SocietyIdParam": {
+                    "in": "path",
+                    "name": "id",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    },
+                    "description": "The society ID"
+                },
+                "UserIdParam": {
+                    "in": "path",
+                    "name": "id",
+                    "required": true,
+                    "schema": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "description": "The user ID"
+                },
+                "ZoneIdParam": {
+                    "in": "path",
+                    "name": "id",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    },
+                    "description": "The zone ID"
+                }
+            }
+        },
+        "security": [
+            {
+                "bearerAuth": []
+            }
+        ],
+        "paths": {
+            "/auth/login": {
+                "post": {
+                    "summary": "Log in a user",
+                    "tags": [
+                        "Authentication"
+                    ],
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthLoginInput"
+                                }
+                            }
+                  

@@ -1,0 +1,224 @@
+{
+    "swaggerDoc": {
+        "openapi": "3.0.0",
+        "info": {
+            "title": "Jeel Aqua API",
+            "version": "1.0.0",
+            "description": "API documentation for the Jeel Aqua Water Supply Dashboard backend",
+            "contact": {
+                "name": "Support Team"
+            }
+        },
+        "servers": [
+            {
+                "url": "http://localhost:3001/api",
+                "description": "Development server"
+            }
+        ],
+        "components": {
+            "securitySchemes": {
+                "bearerAuth": {
+                    "type": "http",
+                    "scheme": "bearer",
+                    "bearerFormat": "JWT"
+                }
+            },
+            "schemas": {
+                "AuthLoginInput": {
+                    "type": "object",
+                    "required": [
+                        "phone",
+                        "password"
+                    ],
+                    "properties": {
+                        "phone": {
+                            "type": "string",
+                            "description": "User's registered phone number.",
+                            "example": "0000000000"
+                        },
+                        "password": {
+                            "type": "string",
+                            "format": "password",
+                            "description": "User's password.",
+                            "example": "admin123"
+                        }
+                    }
+                },
+                "AuthLoginResponse": {
+                    "type": "object",
+                    "properties": {
+                        "message": {
+                            "type": "string",
+                            "example": "Login successful"
+                        },
+                        "token": {
+                            "type": "string",
+                            "description": "JWT token for subsequent requests."
+                        },
+                        "user": {
+                            "$ref": "#/components/schemas/User"
+                        }
+                    }
+                },
+                "Expense": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "expense_type": {
+                            "type": "string",
+                            "description": "Category of expense"
+                        },
+                        "expense_date": {
+                            "type": "string",
+                            "format": "date"
+                        },
+                        "amount": {
+                            "type": "number",
+                            "format": "double"
+                        },
+                        "source": {
+                            "type": "string",
+                            "enum": [
+                                "Cash",
+                                "Bank"
+                            ]
+                        },
+                        "remarks": {
+                            "type": "string",
+                            "nullable": true
+                        },
+                        "note": {
+                            "type": "string",
+                            "nullable": true
+                        },
+                        "approved_by": {
+                            "type": "integer",
+                            "nullable": true,
+                            "description": "User ID of approver"
+                        },
+                        "created_by": {
+                            "type": "integer",
+                            "readOnly": true,
+                            "description": "User ID of creator"
+                        },
+                        "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        },
+                        "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        },
+                        "is_deleted": {
+                            "type": "integer",
+                            "readOnly": true
+                        }
+                    }
+                },
+                "ExpenseInput": {
+                    "type": "object",
+                    "required": [
+                        "expense_type",
+                        "expense_date",
+                        "amount",
+                        "source"
+                    ],
+                    "properties": {
+                        "expense_type": {
+                            "type": "string"
+                        },
+                        "expense_date": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "YYYY-MM-DD"
+                        },
+                        "amount": {
+                            "type": "number",
+                            "format": "double"
+                        },
+                        "source": {
+                            "type": "string",
+                            "enum": [
+                                "Cash",
+                                "Bank"
+                            ]
+                        },
+                        "remarks": {
+                            "type": "string"
+                        },
+                        "note": {
+                            "type": "string"
+                        },
+                        "approved_by": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "Measure": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "title": {
+                            "type": "string"
+                        },
+                        "notes": {
+                            "type": "string",
+                            "nullable": true
+                        },
+                        "is_active": {
+                            "type": "integer",
+                            "description": "1=active, 0=inactive"
+                        },
+                        "is_deleted": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        },
+                        "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        }
+                    }
+                },
+                "MeasureInput": {
+                    "type": "object",
+                    "required": [
+                        "title"
+                    ],
+                    "properties": {
+                        "title": {
+                            "type": "string"
+                        },
+                        "notes": {
+                            "type": "string"
+                        },
+                        "is_active": {
+                            "type": "integer",
+                            "description": "1=active, 0=inactive",
+                            "default": 1
+                        }
+                    }
+                },
+                "Mock": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "description": "The mock ID.",
+                            "example": 1
+                        },
+                        "name": {
+                            "type": "

@@ -1,0 +1,209 @@
+string",
+                            "description": "The name of the mock item.",
+                            "example": "Test Mock Item"
+                        }
+                    },
+                    "required": [
+                        "id",
+                        "name"
+                    ]
+                },
+                "Order": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "service_id": {
+                            "type": "integer"
+                        },
+                        "user_id": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "quantity": {
+                            "type": "integer"
+                        },
+                        "price": {
+                            "type": "number",
+                            "format": "double",
+                            "readOnly": true,
+                            "description": "Price per unit at time of order"
+                        },
+                        "sub_total": {
+                            "type": "number",
+                            "format": "double",
+                            "readOnly": true
+                        },
+                        "discount": {
+                            "type": "number",
+                            "format": "double",
+                            "default": 0
+                        },
+                        "grand_total": {
+                            "type": "number",
+                            "format": "double",
+                            "readOnly": true
+                        },
+                        "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        },
+                        "notes": {
+                            "type": "string",
+                            "nullable": true
+                        }
+                    }
+                },
+                "OrderInput": {
+                    "type": "object",
+                    "required": [
+                        "user_id",
+                        "service_id",
+                        "quantity"
+                    ],
+                    "properties": {
+                        "user_id": {
+                            "type": "integer",
+                            "description": "The ID of the customer placing the order"
+                        },
+                        "service_id": {
+                            "type": "integer"
+                        },
+                        "quantity": {
+                            "type": "integer"
+                        },
+                        "discount": {
+                            "type": "number",
+                            "format": "double"
+                        },
+                        "notes": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "OrderUpdateInput": {
+                    "type": "object",
+                    "properties": {
+                        "quantity": {
+                            "type": "integer"
+                        },
+                        "discount": {
+                            "type": "number",
+                            "format": "double"
+                        },
+                        "notes": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "OrderDelivery": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "readOnly": true
+                        },
+                        "order_id": {
+                            "type": "integer"
+                        },
+                        "delivery_boy_id": {
+                            "type": "integer"
+                        },
+                        "delivery_date": {
+                            "type": "string",
+                            "format": "date-time"
+                        },
+                        "qty_ordered": {
+                            "type": "integer",
+                            "description": "Quantity delivered in this instance"
+                        },
+                        "qty_return": {
+                            "type": "integer",
+                            "description": "Quantity returned (e.g., empty jars)",
+                            "default": 0
+                        },
+                        "total_amount": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "Amount associated with this delivery (if applicable)"
+                        },
+                        "notes": {
+                            "type": "string",
+                            "nullable": true
+                        },
+                        "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        },
+                        "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "readOnly": true
+                        }
+                    }
+                },
+                "OrderDeliveryInput": {
+                    "type": "object",
+                    "required": [
+                        "order_id",
+                        "delivery_boy_id",
+                        "delivery_date",
+                        "qty_ordered",
+                        "total_amount"
+                    ],
+                    "properties": {
+                        "order_id": {
+                            "type": "integer",
+                            "description": "ID of the parent order"
+                        },
+                        "delivery_boy_id": {
+                            "type": "integer",
+                            "description": "ID of the assigned delivery user"
+                        },
+                        "delivery_date": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "Date of delivery (YYYY-MM-DD)"
+                        },
+                        "qty_ordered": {
+                            "type": "integer",
+                            "description": "Quantity to be delivered"
+                        },
+                        "total_amount": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "Amount for this delivery"
+                        },
+                        "notes": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "OrderDeliveryUpdateInput": {
+                    "type": "object",
+                    "properties": {
+                        "delivery_boy_id": {
+                            "type": "integer",
+                            "description": "Reassign delivery boy"
+                        },
+                        "delivery_date": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "Reschedule delivery date"
+                        },
+                        "qty_return": {
+                            "type": "integer",
+                            "description": "Quantity returned (e.g., empty jars)"
+                        },
+                        "total_amount": {
+                            "type": "number",
+                            "format": "double",
+                            "description": "Update amount for delivery"
+                        },
+                        "notes": {
+                            "type": "string"
+      

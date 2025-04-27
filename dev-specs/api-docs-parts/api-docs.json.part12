@@ -1,0 +1,217 @@
+": "Update a service (Admin only)",
+                    "tags": [
+                        "Services"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/ServiceIdParam"
+                        }
+                    ],
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "multipart/form-data": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServiceInput"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServiceInput"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Service updated"
+                        },
+                        "400": {
+                            "description": "Validation Error"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden"
+                        },
+                        "404": {
+                            "description": "Service not found"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                },
+                "delete": {
+                    "summary": "Delete a service (Admin only)",
+                    "tags": [
+                        "Services"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/ServiceIdParam"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Service deleted"
+                        },
+                        "400": {
+                            "description": "Validation Error"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden"
+                        },
+                        "404": {
+                            "description": "Service not found"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                }
+            },
+            "/societies": {
+                "get": {
+                    "summary": "Get all active societies (optionally filtered by zone)",
+                    "tags": [
+                        "Societies"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "in": "query",
+                            "name": "zoneId",
+                            "schema": {
+                                "type": "integer"
+                            },
+                            "required": false,
+                            "description": "Filter societies by zone ID."
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "List of societies",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/Society"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                },
+                "post": {
+                    "summary": "Create a new society",
+                    "tags": [
+                        "Societies"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SocietyInput"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "201": {
+                            "description": "Society created",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "properties": {
+                                            "message": {
+                                                "type": "string"
+                                            },
+                                            "id": {
+                                                "type": "integer"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Validation Error"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        },
+                        "403": {
+                            "description": "Forbidden"
+                        },
+                        "500": {
+                            "description": "Internal Server Error"
+                        }
+                    }
+                }
+            },
+            "/societies/{id}": {
+                "get": {
+                    "summary": "Get a society by ID",
+                    "tags": [
+                        "Societies"
+                    ],
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "parameters": [
+                        {
+                            "$ref": "#/components/parameters/SocietyIdParam"
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Society data",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/Society"
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Invalid ID"
+                  
