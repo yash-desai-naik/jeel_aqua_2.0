@@ -1,3 +1,4 @@
 package-lock.json
 .cursor
 backend/package-lock.json
+.env
